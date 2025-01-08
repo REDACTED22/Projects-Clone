@@ -1,30 +1,27 @@
 import requests
 from bs4 import BeautifulSoup
 
-
+website = 'https://books.toscrape.com/'
 # Making a GET request
-r = requests.get('https://www.police.psu.edu/daily-crime-log')
+r = requests.get(website)
+html=r.text
 
-# check status code for response received
-# success code - 200
-print(r)
 
 # Parsing the HTML
-soup = BeautifulSoup(r.content, 'html.parser')
-soup=soup.prettify()
-file = open("Web.txt", "w")
-file.write(soup)
+soup = BeautifulSoup(html, 'lxml')
+#print(soup.prettify())
+file = open("Web.html", "w")
+file.write(soup.prettify())
 
 
-def get_lines_containing_word(file_path, word):
-    matching_lines = []
-    with open('Web.txt', "r") as file:
-        for line in file:
-            # Check if the word is in the line
-            if word in line:
-                matching_lines.append(line.strip())  # Add to the list without extra whitespace
-    return matching_lines
+box = soup.find('li', class_='col-xs-6 col-sm-4 col-md-3 col-lg-3')
+info = box.find('div', class_='product_price')
+price=info.find('p').text
+title=box.find('h3').text
+print(title)
+print(price)
 
 
+#https://www.police.psu.edu/daily-crime-log
 
 file.close
