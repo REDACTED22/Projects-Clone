@@ -2,8 +2,7 @@ import cv2
 import numpy as np
 from matplotlib import pyplot as plt
 #Bacground removal package
-from rembg import remove 
-from PIL import Image
+
 
 
 #Converts image to HSV color space
@@ -11,10 +10,8 @@ from PIL import Image
 #Next need to use numpy to display the chart and match different photos together based on color
 
 #removes background from image
-shirt="/Users/alexandermcgreevy/Documents/GitHub/Projects-Clone/Colorblind Clothes Matcher/BlueShirt.jpg"
-input=Image.open(shirt)
-output=remove(input)
-output.save(shirt)
+shirt="/Users/alexandermcgreevy/Documents/GitHub/Projects-Clone/BlueShirt_no_bg.png"
+
 img = cv2.imread(shirt)
 
 
