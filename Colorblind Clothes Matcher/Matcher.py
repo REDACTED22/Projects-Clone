@@ -20,9 +20,11 @@ def saveClothing():
         out_file.write(output_image)
 
     print("Background removed and saved to:", tempClothing)
-    clothingColor(top_blue, top_green, top_red)
+    
 
-saveClothing()
+
+#saveClothing()
+tempClothing="/Users/alexandermcgreevy/Documents/GitHub/Projects-Clone/Clothing.png"
 # Read the image
 img = cv2.imread(tempClothing)
 
@@ -48,12 +50,19 @@ def clothingColor(top_blue, top_green, top_red):
     green = top_green[0][0]
     red = top_red[0][0]
 
+    for i in range(1, 3):
+        blue += top_blue[i][0]
+        green += top_green[i][0]
+        red += top_red[i][0]
+
+    
+
 
     
     
 
-def findColor(red,green,blue):
-    color = {
+def findColor(red, green, blue):
+    color_ranges = {
         'Red': [[200, 0, 0], [255, 75, 75]],
         'Red-orange': [[255, 75, 75], [255, 100, 75]],
         'Orange': [[255, 100, 75], [255, 165, 75]],
@@ -65,8 +74,18 @@ def findColor(red,green,blue):
         'Blue': [[75, 255, 255], [75, 75, 255]],
         'Blue-violet': [[75, 75, 255], [100, 75, 255]],
         'Violet': [[100, 75, 255], [200, 75, 255]],
-        'Red-violet': [[200, 75, 255], [200, 75, 75]]}
-    return color
+        'Red-violet': [[200, 75, 255], [200, 75, 75]]
+    }
+    #NEED TO FIX THIS SO IT USES THE SECOND AND 3rd Number
+    for color_name, (lower, upper) in color_ranges.items():
+        if lower[0] <= red <= upper[0] and lower[1] <= green <= upper[1] and lower[2] <= blue <= upper[2]:
+            return color_name
+    return "Unknown color"
+
+# Example usage
+red, green, blue = 255, 100, 75
+color_name = findColor(red, green, blue)
+print(f"The color is: {color_name}")
 
 
 def complementaryMatches(color):
@@ -116,7 +135,7 @@ def analogousMatches(color):
         'Red-violet': ['Violet', 'Red']}
     
 def splitComplementaryMatches(color):
-    splitComplementary=splitComplementary = {
+    splitComplementary = {
         'Red': ['Blue-green', 'Yellow-green'], 
         'Red-orange': ['Blue', 'Green'],
         'Orange': ['Blue-violet', 'Blue-green'],
@@ -134,3 +153,5 @@ def splitComplementaryMatches(color):
 print("Top 3 Blue intensities and pixel counts:", top_blue)
 print("Top 3 Green intensities and pixel counts:", top_green)
 print("Top 3 Red intensities and pixel counts:", top_red)
+
+clothingColor(top_blue, top_green, top_red)
