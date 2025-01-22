@@ -45,38 +45,32 @@ top_green = get_top_colors(greenHist)
 top_red = get_top_colors(redHist)
 
 def clothingColor(top_blue, top_green, top_red):
-    # Get the top intensity values for each channel
-    blue = top_blue[0][0]
-    green = top_green[0][0]
-    red = top_red[0][0]
+    # Get the average of the top 3 intensity values for each channel
+    blue = sum([top_blue[i][0] for i in range(3)]) // 3
+    green = sum([top_green[i][0] for i in range(3)]) // 3
+    red = sum([top_red[i][0] for i in range(3)]) // 3
 
-    for i in range(1, 3):
-        blue += top_blue[i][0]
-        green += top_green[i][0]
-        red += top_red[i][0]
-
-    
-
+    # Currently return the average color intensities(Fix it to ignore black and choose the next highest intensity)
+    return red, green, blue
 
     
     
 
 def findColor(red, green, blue):
     color_ranges = {
-        'Red': [[200, 0, 0], [255, 75, 75]],
-        'Red-orange': [[255, 75, 75], [255, 100, 75]],
-        'Orange': [[255, 100, 75], [255, 165, 75]],
-        'Yellow-orange': [[255, 165, 75], [255, 200, 75]],
-        'Yellow': [[255, 200, 75], [255, 255, 75]],
-        'Yellow-green': [[255, 255, 75], [200, 255, 75]],
-        'Green': [[200, 255, 75], [75, 255, 75]],
-        'Blue-green': [[75, 255, 75], [75, 255, 255]],
-        'Blue': [[75, 255, 255], [75, 75, 255]],
-        'Blue-violet': [[75, 75, 255], [100, 75, 255]],
-        'Violet': [[100, 75, 255], [200, 75, 255]],
-        'Red-violet': [[200, 75, 255], [200, 75, 75]]
-    }
-    #NEED TO FIX THIS SO IT USES THE SECOND AND 3rd Number
+    'Red': [[50, 0, 0], [255, 75, 75]],
+    'Red-orange': [[75, 25, 0], [255, 100, 75]],
+    'Orange': [[100, 50, 0], [255, 165, 75]],
+    'Yellow-orange': [[150, 100, 0], [255, 200, 75]],
+    'Yellow': [[150, 150, 0], [255, 255, 75]],
+    'Yellow-green': [[100, 150, 0], [200, 255, 75]],
+    'Green': [[0, 100, 0], [75, 255, 75]],
+    'Blue-green': [[0, 75, 50], [75, 255, 255]],
+    'Blue': [[0, 0, 50], [75, 75, 255]],
+    'Blue-violet': [[25, 0, 50], [100, 75, 255]],
+    'Violet': [[50, 0, 100], [200, 75, 255]],
+    'Red-violet': [[75, 0, 50], [200, 75, 100]]}
+
     for color_name, (lower, upper) in color_ranges.items():
         if lower[0] <= red <= upper[0] and lower[1] <= green <= upper[1] and lower[2] <= blue <= upper[2]:
             return color_name
@@ -153,5 +147,7 @@ def splitComplementaryMatches(color):
 print("Top 3 Blue intensities and pixel counts:", top_blue)
 print("Top 3 Green intensities and pixel counts:", top_green)
 print("Top 3 Red intensities and pixel counts:", top_red)
-
-clothingColor(top_blue, top_green, top_red)
+red, green, blue = clothingColor(top_blue, top_green, top_red)
+print(red,' ',green,' ',blue)
+color_name = findColor(red, green, blue)
+print(f"The color is: {color_name}")
