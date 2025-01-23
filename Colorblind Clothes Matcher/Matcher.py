@@ -3,17 +3,18 @@ from PIL import Image
 import cv2
 import numpy as np
 import heapq
-
+global input_image
 #Saves new image and strips background for easier handling
 def saveClothing():
     # Path to the image file
-    input_path = "/Users/alexandermcgreevy/Documents/GitHub/Projects-Clone/decalShirt.jpg"
-    tempClothing = "Clothing.png"
+    input_path = "Colorblind Clothes Matcher/decalShirt.jpg"
+    tempClothing = "/Users/alexandermcgreevy/Documents/GitHub/Projects-Clone/Colorblind Clothes Matcher/Clothing.png"
 
     # Open and process the image
-    with open(input_path, "rb") as inp_file:
+    with open(input_path, "rb+") as inp_file:
         input_image = inp_file.read()
         output_image = remove(input_image)
+        out_file.write(output_image)
 
     # Save the output
     with open(tempClothing, "wb") as out_file:
@@ -23,26 +24,12 @@ def saveClothing():
     
 
 
-#saveClothing()
-tempClothing="/Users/alexandermcgreevy/Documents/GitHub/Projects-Clone/Clothing.png"
-# Read the image
-img = cv2.imread(tempClothing)
-
-# Calculate histograms for B, G, R channels
-blueHist = cv2.calcHist([img], [0], None, [256], [0, 256])
-greenHist = cv2.calcHist([img], [1], None, [256], [0, 256])
-redHist = cv2.calcHist([img], [2], None, [256], [0, 256])
-
 # Function to get the top 3 intensity values
 def get_top_colors(hist):
     # Flatten histogram and find the top 3 intensities found in the image
     top_values = heapq.nlargest(3, enumerate(hist.flatten()), key=lambda x: x[1])
     return [(index, int(value)) for index, value in top_values]
 
-# Get top 3 colors for each channel
-top_blue = get_top_colors(blueHist)
-top_green = get_top_colors(greenHist)
-top_red = get_top_colors(redHist)
 
 def clothingColor(top_blue, top_green, top_red):
     # Get the average of the top 3 intensity values for each channel
@@ -76,10 +63,6 @@ def findColor(red, green, blue):
             return color_name
     return "Unknown color"
 
-# Example usage
-red, green, blue = 255, 100, 75
-color_name = findColor(red, green, blue)
-print(f"The color is: {color_name}")
 
 
 def complementaryMatches(color):
@@ -127,6 +110,7 @@ def analogousMatches(color):
         'Blue-violet': ['Blue', 'Violet'],
         'Violet': ['Blue-violet', 'Red-violet'],
         'Red-violet': ['Violet', 'Red']}
+    return analogous[color]
     
 def splitComplementaryMatches(color):
     splitComplementary = {
@@ -143,7 +127,32 @@ def splitComplementaryMatches(color):
         'Violet': ['Yellow-orange', 'Yellow-green'],
         'Red-violet': ['Yellow', 'Green']
         }
+    return splitComplementary[color]
 
+def saveToFile():
+    #Save the color information to a file
+    file=open("Colorblind Clothes Matcher/ColorInfo.txt","w+")
+    file.write(f"{inputImage} Color: {color_name}\n")
+
+
+
+
+#TEMPORARY FUNCTION CALL
+#saveClothing()
+tempClothing="/Users/alexandermcgreevy/Documents/GitHub/Projects-Clone/Colorblind Clothes Matcher/Clothing.png"
+# Read the image
+img = cv2.imread(tempClothing)
+
+# Calculate histograms for B, G, R channels
+blueHist = cv2.calcHist([img], [0], None, [256], [0, 256])
+greenHist = cv2.calcHist([img], [1], None, [256], [0, 256])
+redHist = cv2.calcHist([img], [2], None, [256], [0, 256])
+# Get top 3 colors for each channel
+top_blue = get_top_colors(blueHist)
+top_green = get_top_colors(greenHist)
+top_red = get_top_colors(redHist)
+
+#EXAMPLE OUTPUT
 print("Top 3 Blue intensities and pixel counts:", top_blue)
 print("Top 3 Green intensities and pixel counts:", top_green)
 print("Top 3 Red intensities and pixel counts:", top_red)
@@ -151,3 +160,7 @@ red, green, blue = clothingColor(top_blue, top_green, top_red)
 print(red,' ',green,' ',blue)
 color_name = findColor(red, green, blue)
 print(f"The color is: {color_name}")
+print(f"The complementary color is: {complementaryMatches(color_name)}")
+print(f"The triadic colors are: {triadicMatches(color_name)}")
+print(f"The split complementary colors are: {splitComplementaryMatches(color_name)}")
+print(f"The analogous colors are: {analogousMatches(color_name)}")
